@@ -1,0 +1,2 @@
+# bdm
+# training-course-bdm
