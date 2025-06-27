@@ -3,10 +3,13 @@ package com.example.bdm.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.example.bdm.model.Student;
 import com.example.bdm.repository.AppStudentRepository;
 import com.example.bdm.utils.StudentType;
 
+@Service
 public class StudentService implements StudentType {
 
   private final AppStudentRepository repository;
