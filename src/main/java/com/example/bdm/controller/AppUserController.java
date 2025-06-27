@@ -40,7 +40,7 @@ public class AppUserController {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             AppUserDto foundUserData = userService.getUserDTOById(id);
-            return ResponseEntity.ok(new AppUserDto(found));
+            return ResponseEntity.ok(foundUserData);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body("No corresponding user found");
         } catch (Exception e) {

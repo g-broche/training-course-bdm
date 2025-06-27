@@ -3,6 +3,7 @@ package com.example.bdm.service;
 import com.example.bdm.dto.AppUserDto;
 import com.example.bdm.model.AppUser;
 import com.example.bdm.repository.AppUserRepository;
+import com.example.bdm.repository.RoleRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;

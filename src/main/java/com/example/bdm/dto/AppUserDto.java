@@ -19,7 +19,7 @@ public class AppUserDto {
     private boolean isActive;
     private Timestamp createdAt;
     private boolean gdpr;
-//    private RoleDTO role;
+    private RoleDto role;
 
     public AppUserDto(){
 
@@ -33,7 +33,7 @@ public class AppUserDto {
         this.isActive = user.isActive();
         this.createdAt = user.getCreatedAt();
         this.gdpr = user.isGdpr();
-//        this.role = new RoleDto (user.getRole());
+        this.role = new RoleDto (user.getRole());
     }
 
     public Long getId() {
@@ -92,11 +92,11 @@ public class AppUserDto {
         this.gdpr = gdpr;
     }
 
-//    public RoleDTO getRole() {
-//        return role;
-//    }
-//
-//    public void setRole(RoleDTO role) {
-//        this.role = role;
-//    }
+    public RoleDto getRole() {
+        return role;
+    }
+
+    public void setRole(RoleDto role) {
+        this.role = role;
+    }
 }
