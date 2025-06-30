@@ -3,20 +3,13 @@ package com.example.bdm.controller;
 import com.example.bdm.dto.AppUserDto;
 import com.example.bdm.dto.RequestUserGdprUpdate;
 import com.example.bdm.dto.ResponseUserGdpr;
-import com.example.bdm.model.AppUser;
-import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.service.UserService;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/users")

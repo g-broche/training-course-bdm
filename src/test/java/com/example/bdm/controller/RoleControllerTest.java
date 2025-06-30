@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -43,6 +44,7 @@ class RoleControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void getAll_ShouldReturnAllExistingRoles() throws Exception{
         roleRepository.save(new Role("role 1"));
         roleRepository.save(new Role("role 2"));
