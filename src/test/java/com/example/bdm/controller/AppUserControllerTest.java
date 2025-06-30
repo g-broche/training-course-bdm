@@ -186,6 +186,9 @@ class AppUserControllerTest {
                         .content(objectMapper.writeValueAsString(changeGdprRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User GDPR status has been set to accepted"));
+
+        AppUser changedUser = userRepository.findById(userWithNoGdpr.getId()).orElseThrow();
+        assertTrue(changedUser.getGdpr());
     }
 
     @Test
@@ -207,5 +210,7 @@ class AppUserControllerTest {
                         .content(objectMapper.writeValueAsString(changeGdprRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User GDPR status has been set to denied"));
+        AppUser changedUser = userRepository.findById(userWithNoGdpr.getId()).orElseThrow();
+        assertFalse(changedUser.getGdpr());
     }
 }
