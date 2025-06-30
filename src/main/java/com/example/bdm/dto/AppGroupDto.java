@@ -1,13 +1,21 @@
 package com.example.bdm.dto;
 import com.example.bdm.model.AppGroup;
 import com.example.bdm.model.AppList;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.sql.Timestamp;
 
 
 public class AppGroupDto {
     private Long id;
+
+    @NotBlank(message = "name is required")
+    @Size(max = 50)
     private  String name;
+
+    @NotNull(message = "listId is required")
     private AppList listId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
