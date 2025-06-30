@@ -2,16 +2,42 @@ package com.example.bdm.dto;
 
 
 import com.example.bdm.model.enums.Gender;
+import com.example.bdm.model.enums.Profile;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class AppStudentDto {
   private Long id;
+
+  @NotBlank(message = "First Name can't be empty")
+  @Size(min = 3, message = "Name need 3 caracteres minimals")
   private String firstName;
-  private int age;
-  private boolean hasDwwm;
-  private Integer frenchSkill;
-  private Integer techSkill;
-  private com.example.bdm.model.enums.Profile profile;
-  private Gender gender;
+
+  @Min(value = 0, message = "Age must be at least 0")
+    @Max(value = 120, message = "Age must be realistic")
+    private int age;
+
+    private boolean hasDwwm;
+
+    @NotNull(message = "French skill is required")
+    @Min(value = 0, message = "French skill must be >= 0")
+    @Max(value = 10, message = "French skill must be <= 10")
+    private Integer frenchSkill;
+
+    @NotNull(message = "Tech skill is required")
+    @Min(value = 0, message = "Tech skill must be >= 0")
+    @Max(value = 10, message = "Tech skill must be <= 10")
+    private Integer techSkill;
+
+    @NotNull(message = "Profile is required")
+    private Profile profile;
+
+    @NotNull(message = "Gender is required")
+    private Gender gender;
 
   public Long getId() { return id;}
   public void setId(Long id) { this.id = id;}

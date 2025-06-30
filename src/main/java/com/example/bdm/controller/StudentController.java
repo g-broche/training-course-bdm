@@ -18,6 +18,8 @@ import com.example.bdm.mapper.StudentMapper;
 import com.example.bdm.model.Student;
 import com.example.bdm.service.StudentService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
@@ -31,7 +33,7 @@ public class StudentController {
   }
   
   @PostMapping
-  public ResponseEntity<AppStudentDto> createStudent(@RequestBody AppStudentDto dto){
+  public ResponseEntity<AppStudentDto> createStudent( @Valid @RequestBody AppStudentDto dto){
     Student student = mapper.toEntity(dto);
     Student saved = service.save(student);    
     return ResponseEntity.ok(mapper.toDTO(saved));
