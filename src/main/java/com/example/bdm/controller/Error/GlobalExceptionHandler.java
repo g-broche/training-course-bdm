@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,10 +19,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, List<String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, List<String>> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
+       ex.getBindingResult().getAllErrors().forEach(error -> {
             String errorMessage = error.getDefaultMessage();
-            errors.computeIfAbsent(fieldName, key -> new ArrayList<>()).add(errorMessage);
+            errors.computeIfAbsent("data", key -> new ArrayList<>()).add(errorMessage);
         });
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
