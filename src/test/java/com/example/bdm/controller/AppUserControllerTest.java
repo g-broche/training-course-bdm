@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -61,6 +62,7 @@ class AppUserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void getAll_ShouldReturnAllExistingUsers() throws Exception{
         AppUser user1 = userRepository.save(new AppUser(
                 "firstName",
@@ -88,6 +90,7 @@ class AppUserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void getById_GivenValidId_ShouldReturnCorrespondingUser() throws Exception{
         AppUser user1 = userRepository.save(new AppUser(
                 "firstName",
@@ -112,12 +115,14 @@ class AppUserControllerTest {
                 .andExpect(jsonPath("$.lastName").value("lastName2"));
     }
     @Test
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void getById_GivenInvalidId_ShouldReturn404Error() throws Exception{
         mockMvc.perform(get("/api/users/1"))
                 .andExpect(status().is(404));
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void deleteById_GivenValidId_ShouldDeleteCorrespondingUser() throws Exception{
         AppUser userToDelete = userRepository.save(new AppUser(
                 "toDelete",
@@ -136,6 +141,7 @@ class AppUserControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void getGdprStatusForUserId_ShouldReturnExpectedUserGdprStatus() throws Exception{
         AppUser userWithNoGdpr = new AppUser(
                 "notAccepted",
@@ -169,6 +175,7 @@ class AppUserControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void setGdprStatusForUserId_WhenChangingFromFalseToTrue_ShouldUpdateAndReturnExpectedMessage() throws Exception{
         AppUser userWithNoGdpr = userRepository .save (new AppUser(
                 "notAccepted",
@@ -193,6 +200,7 @@ class AppUserControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "testuser", roles = { "Admin" })
     void setGdprStatusForUserId_WhenChangingFromTrueToFalse_ShouldUpdateAndReturnExpectedMessage() throws Exception{
         AppUser userWithNoGdpr = userRepository .save (new AppUser(
                 "notAccepted",
