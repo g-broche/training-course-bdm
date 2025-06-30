@@ -39,6 +39,17 @@ public class AppUser {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    public AppUser() {
+    }
+
+    public AppUser(String firstName, String lastName, String email, String password, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public Long getId() {
         return id;
     }
@@ -79,7 +90,7 @@ public class AppUser {
         this.password = password;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
@@ -111,7 +122,7 @@ public class AppUser {
         this.editedAt = editedAt;
     }
 
-    public boolean isGdpr() {
+    public boolean getGdpr() {
         return gdpr;
     }
 
