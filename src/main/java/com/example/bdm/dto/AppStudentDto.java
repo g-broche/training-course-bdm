@@ -13,32 +13,40 @@ import jakarta.validation.constraints.Size;
 public class AppStudentDto {
   private Long id;
 
+  //First Name validator
   @NotBlank(message = "First Name can't be empty")
   @Size(min = 3, message = "Name need 3 caracteres minimals")
   private String firstName;
 
+  //Age validator
   @Min(value = 0, message = "Age must be at least 0")
-    @Max(value = 120, message = "Age must be realistic")
-    private int age;
+  @Max(value = 120, message = "Age must be realistic")
+  private int age;
 
-    private boolean hasDwwm;
+  private boolean hasDwwm;
 
-    @NotNull(message = "French skill is required")
-    @Min(value = 0, message = "French skill must be >= 0")
-    @Max(value = 10, message = "French skill must be <= 10")
-    private Integer frenchSkill;
+  //FrenchSkill validator
+  @NotNull(message = "French skill is required")
+  @Min(value = 0, message = "French skill must be >= 0")
+  @Max(value = 4, message = "French skill must be <= 4")
+  private Integer frenchSkill;
 
-    @NotNull(message = "Tech skill is required")
-    @Min(value = 0, message = "Tech skill must be >= 0")
-    @Max(value = 10, message = "Tech skill must be <= 10")
-    private Integer techSkill;
+  //TechSkill validator
+  @NotNull(message = "Tech skill is required")
+  @Min(value = 0, message = "Tech skill must be >= 0")
+  @Max(value = 4, message = "Tech skill must be <= 4")
+  private Integer techSkill;
 
-    @NotNull(message = "Profile is required")
-    private Profile profile;
+  //Profile validator
+  @NotNull(message = "Profile is required")
+  private Profile profile;
 
-    @NotNull(message = "Gender is required")
-    private Gender gender;
+  //Gender validator
+  @NotNull(message = "Gender is required")
+  private Gender gender;
 
+
+  //Getter Setter
   public Long getId() { return id;}
   public void setId(Long id) { this.id = id;}
 

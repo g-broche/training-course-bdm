@@ -12,28 +12,35 @@ import com.example.bdm.utils.StudentType;
 @Service
 public class StudentService implements StudentType {
 
+  //Student repository
   private final AppStudentRepository repository;
-
+  
+  //Student Service
   public StudentService(AppStudentRepository repository){
     this.repository = repository;
   }
-   @Override
-   public Student save(Student student){
+
+  //Create Student
+  @Override
+  public Student save(Student student){
     return repository.save(student);
-   }
+  }
 
-   @Override
-   public Optional<Student> findById(Long id){
+  //Get student By id
+  @Override
+  public Optional<Student> findById(Long id){
     return repository.findById(id);
-   }
+  }
 
-   @Override
-   public List<Student> findAll() {
+  //Get all student
+  @Override
+  public List<Student> findAll() {
     return repository.findAll();
-   }
+  }
 
-   @Override
-   public Student update(Long id, Student updatedStudent) {
+  //Student update by id
+  @Override
+  public Student update(Long id, Student updatedStudent) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setFirstName(updatedStudent.getFirstName());
@@ -48,8 +55,9 @@ public class StudentService implements StudentType {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
-    @Override
-    public void deleteById(Long id){
+  //Student delete
+  @Override
+  public void deleteById(Long id){
       repository.deleteById(id);
-    }
+  }
 }

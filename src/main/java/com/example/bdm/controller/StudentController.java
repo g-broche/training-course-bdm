@@ -32,6 +32,7 @@ public class StudentController {
     this.mapper = mapper;
   }
   
+  //Create a student
   @PostMapping
   public ResponseEntity<AppStudentDto> createStudent( @Valid @RequestBody AppStudentDto dto){
     Student student = mapper.toEntity(dto);
@@ -39,17 +40,19 @@ public class StudentController {
     return ResponseEntity.ok(mapper.toDTO(saved));
   }
 
+  //Get Student by id
   @GetMapping("/{id}")
   public ResponseEntity<AppStudentDto> getStudent(@PathVariable Long id){
     return service.findById(id).map(mapper::toDTO).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
   }
 
+  //Get all Students
   @GetMapping
   public List<Student> getAllStudents() {
     return service.findAll();
   }
 
-
+  //Update Student by id
   @PutMapping("/{id}")
     public ResponseEntity<AppStudentDto> update(@PathVariable Long id, @RequestBody AppStudentDto dto) {
         Student updated = service.findById(id).map(student -> {
@@ -59,7 +62,7 @@ public class StudentController {
         return ResponseEntity.ok(mapper.toDTO(updated));
     }
 
-
+    //Delete Student By id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
       service.deleteById(id);

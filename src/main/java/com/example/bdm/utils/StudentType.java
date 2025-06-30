@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.example.bdm.model.Student;
 
+//Student type
 public interface StudentType {
   Student save(Student student);
   Optional<Student> findById(Long id);
