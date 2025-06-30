@@ -9,6 +9,7 @@ public interface AppListType {
    AppList save(AppList appList);
    Optional<AppList> findById(Long id);
    List<AppList> findAll();
+   List<AppList> findByName(String name);
    AppList update(AppList appList, Long id);
    void deleteById(Long id);
 }

@@ -33,6 +33,11 @@ public class AppListService implements AppListType {
    }
 
    @Override
+   public List<AppList> findByName(String name) {
+	  return repository.findByName(name);
+   }
+
+   @Override
    public AppList update(AppList appList, Long id) {
 	  return repository.findById(id)
 			  .map(existing -> {

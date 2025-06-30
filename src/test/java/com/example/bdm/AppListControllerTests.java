@@ -1,6 +1,6 @@
 package com.example.bdm;
 
-import com.example.bdm.controller.AppListController;
+import com.example.bdm.controller.*;
 import com.example.bdm.dto.AppListDto;
 import com.example.bdm.mapper.AppListMapper;
 import com.example.bdm.model.AppList;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
  //Unit tests for the AppListController
- //These tests use Mockito to mock the service and mapper dependencies.
+ //These tests use Mockito to mock the service and mapper dependencies
 @ExtendWith(MockitoExtension.class)
 public class AppListControllerTests {
 
@@ -162,6 +162,7 @@ public class AppListControllerTests {
       verify(appListMapper, times(1)).toDTO(any(AppList.class));
    }
 
+   //Fail to get list with not found id
    @Test
    @WithMockUser(username = "testUser", password = "pass")
    void testGetAppListById_NotFound() throws Exception {
@@ -172,6 +173,139 @@ public class AppListControllerTests {
           .andExpect(status().isNotFound());
 
       verify(appListService, times(1)).findById(999L);
+      verify(appListMapper, never()).toDTO(any(AppList.class));
+   }
+
+   //Get list with name - success
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testGetAppListByName_Success() throws Exception {
+      List<AppList> expectedLists = Collections.singletonList(testAppList);
+      when(appListService.findByName("testAppList1")).thenReturn(expectedLists);
+      when(appListMapper.toDTO(any(AppList.class))).thenReturn(testAppListDto);
+
+      mockMvc.perform(get("/api/lists/searchList")
+                  .param("name", "testAppList1")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk());
+
+      verify(appListService, times(1)).findByName("testAppList1");
+      verify(appListMapper, times(1)).toDTO(any(AppList.class));
+   }
+
+   //Get list with name - Not found
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testGetAppListByName_NotFound() throws Exception {
+      when(appListService.findByName("nonExistentList")).thenReturn(Collections.emptyList());
+
+      mockMvc.perform(get("/api/lists/searchList")
+                  .param("name", "nonExistentList")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNotFound());
+
+      verify(appListService, times(1)).findByName("nonExistentList");
+      verify(appListMapper, never()).toDTO(any(AppList.class));
+   }
+
+   //Get all students in a list - success
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testGetAllStudentsInList_Success() throws Exception {
+      when(appListService.findById(1L)).thenReturn(Optional.of(testAppList));
+
+      mockMvc.perform(get("/api/lists/1/allStudents")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk());
+
+      verify(appListService, times(1)).findById(1L);
+   }
+
+   //Get all students in a list - Not found
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testGetAllStudentsInList_NotFound() throws Exception {
+      when(appListService.findById(999L)).thenReturn(Optional.empty());
+
+      mockMvc.perform(get("/api/lists/999/allStudents")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNotFound());
+
+      verify(appListService, times(1)).findById(999L);
+   }
+
+   //Update list name - success
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testUpdateListName_Success() throws Exception {
+      AppListDto updatedDto = new AppListDto();
+      updatedDto.setId(1L);
+      updatedDto.setName("updatedListName");
+      updatedDto.setUser(testUser);
+      updatedDto.setStudents(testStudents);
+      updatedDto.setCreatedAt(testAppList.getCreatedAt());
+      updatedDto.setEditedAt(testAppList.getEditedAt());
+
+      AppList updatedAppList = new AppList();
+      updatedAppList.setId(1L);
+      updatedAppList.setName("updatedListName");
+      updatedAppList.setUser(testUser);
+      updatedAppList.setStudents(testStudents);
+      updatedAppList.setCreatedAt(testAppList.getCreatedAt());
+      updatedAppList.setEditedAt(testAppList.getEditedAt());
+
+      when(appListService.findById(1L)).thenReturn(Optional.of(testAppList));
+      when(appListService.save(any(AppList.class))).thenReturn(updatedAppList);
+      when(appListMapper.toDTO(updatedAppList)).thenReturn(updatedDto);
+
+      mockMvc.perform(put("/api/lists/1/updateNameList")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(updatedDto)))
+          .andExpect(status().isOk());
+
+      verify(appListService, times(1)).findById(1L);
+      verify(appListService, times(1)).save(any(AppList.class));
+      verify(appListMapper, times(1)).toDTO(any(AppList.class));
+   }
+
+   //Update list name - Not found
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testUpdateListName_NotFound() throws Exception {
+      AppListDto updatedDto = new AppListDto();
+      updatedDto.setId(999L);
+      updatedDto.setName("updatedListName");
+
+      when(appListService.findById(999L)).thenReturn(Optional.empty());
+
+      mockMvc.perform(put("/api/lists/999/updateNameList")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(updatedDto)))
+          .andExpect(status().isNotFound());
+
+      verify(appListService, times(1)).findById(999L);
+      verify(appListService, never()).save(any(AppList.class));
+      verify(appListMapper, never()).toDTO(any(AppList.class));
+   }
+
+   //Update list name - Bad request
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testUpdateListName_BadRequest() throws Exception {
+      AppListDto updatedDto = new AppListDto();
+      updatedDto.setId(1L);
+      updatedDto.setName("updatedListName");
+
+      when(appListService.findById(1L)).thenReturn(Optional.of(testAppList));
+      when(appListService.save(any(AppList.class))).thenThrow(new RuntimeException("Database error"));
+
+      mockMvc.perform(put("/api/lists/1/updateNameList")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(updatedDto)))
+          .andExpect(status().isBadRequest());
+
+      verify(appListService, times(1)).findById(1L);
+      verify(appListService, times(1)).save(any(AppList.class));
       verify(appListMapper, never()).toDTO(any(AppList.class));
    }
 }
