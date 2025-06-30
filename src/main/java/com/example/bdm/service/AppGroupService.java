@@ -28,14 +28,14 @@ public class AppGroupService {
         }
         return ResponseEntity.notFound().build();
     }
-    public  ResponseEntity<AppGroup> createGroup(AppGroupDto appGroupDto){
+    public  ResponseEntity<?> createGroup(AppGroupDto appGroupDto){
         // Vérification de si la list existe
         // Optional<AppList> existingList =
         // Vérification de si la list appartient bien à l'user
         // Vérification de si le nom de la liste est déjà utiliser par l'user
         AppGroup appGroup = new AppGroup();
         appGroup.setName(appGroupDto.getName());
-        appGroup.setList(appGroupDto.getListId());
+        appGroup.setList();
         appGroup.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         appGroup.setEditedAt(new Timestamp(System.currentTimeMillis()));
 

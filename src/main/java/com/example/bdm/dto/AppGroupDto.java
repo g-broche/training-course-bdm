@@ -16,7 +16,7 @@ public class AppGroupDto {
     private  String name;
 
     @NotNull(message = "listId is required")
-    private AppList listId;
+    private Long listId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -25,7 +25,7 @@ public class AppGroupDto {
     public AppGroupDto(AppGroup group){
         this.id = group.getId();
         this.name = group.getName();
-        this.listId = group.getList();
+        this.listId = group.getList().getId();
         this.createdAt = group.getCreatedAt();
         this.updatedAt = group.getEditedAt();
     }
@@ -41,10 +41,11 @@ public class AppGroupDto {
     public void setName(String name){
         this.name = name;
     }
-    public AppList getListId() {
+    public Long getListId() {
+        System.out.println(listId);
         return listId;
     }
-    public void setListId(AppList listId){
+    public void setListId(Long listId){
         this.listId = listId;
     }
     public Timestamp getCreatedAt() {

@@ -29,7 +29,7 @@ public class AppGroupController {
         return appGroupService.getGroupDetail(id);
     }
     @PostMapping("")
-    public ResponseEntity<AppGroup> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
+    public ResponseEntity<Long> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
         return appGroupService.createGroup(appGroupDto);
     }
 }
