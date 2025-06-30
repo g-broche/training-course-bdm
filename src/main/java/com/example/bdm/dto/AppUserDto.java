@@ -30,9 +30,9 @@ public class AppUserDto {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
-        this.isActive = user.isActive();
+        this.isActive = user.getIsActive();
         this.createdAt = user.getCreatedAt();
-        this.gdpr = user.isGdpr();
+        this.gdpr = user.getGdpr();
         this.role = new RoleDto (user.getRole());
     }
 
@@ -68,7 +68,7 @@ public class AppUserDto {
         this.email = email;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
@@ -84,7 +84,7 @@ public class AppUserDto {
         this.createdAt = createdAt;
     }
 
-    public boolean isGdpr() {
+    public boolean getGdpr() {
         return gdpr;
     }
 

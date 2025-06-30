@@ -1,10 +1,13 @@
 package com.example.bdm.controller;
 
 import com.example.bdm.dto.AppUserDto;
+import com.example.bdm.dto.RequestUserGdprUpdate;
+import com.example.bdm.dto.ResponseUserGdpr;
 import com.example.bdm.model.AppUser;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.service.UserService;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -49,9 +52,43 @@ public class AppUserController {
         }
     }
 
+    @GetMapping("/{id}/gdpr")
+    public ResponseEntity<?> getGdprStatusForUserId(@PathVariable Long id) {
+        try {
+            ResponseUserGdpr UserGdprStatus = userService.getUserGdpr(id);
+            return ResponseEntity.ok(UserGdprStatus);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("No corresponding user found");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Could not retrieve user gdpr status due to internal error");
+        }
+    }
+
+    // TO DO : Match request param id with token stored info when token will exist
+    @PostMapping("/{id}/gdpr")
+    public ResponseEntity<?> setGdprStatusForUserId(@PathVariable Long id, @RequestBody RequestUserGdprUpdate requestUserGdprUpdate) {
+        try {
+            System.out.println(">>> GDPR Request value : "+requestUserGdprUpdate.getHasAcceptedGdpr());
+            boolean hasChanged = userService.updateUserGdpr(id, requestUserGdprUpdate.getHasAcceptedGdpr());
+            if(!hasChanged){
+                return ResponseEntity.ok("User GDPR acceptance status remained the same");
+            }
+            String responseMessage = requestUserGdprUpdate.getHasAcceptedGdpr()
+                    ? "User GDPR status has been set to accepted"
+                    : "User GDPR status has been set to denied";
+            return ResponseEntity.ok(responseMessage);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("No corresponding user found");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Could not change user gdpr status due to internal error");
+        }
+    }
+
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> softDeleteById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             userService.deleteUserById(id);
             return ResponseEntity.noContent().build();
