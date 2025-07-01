@@ -1,7 +1,6 @@
 package com.example.bdm.dto;
 
 import com.example.bdm.model.Role;
-import jakarta.persistence.Column;
 
 public class RoleDto {
     private Long id;

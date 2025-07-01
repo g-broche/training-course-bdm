@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -25,6 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         AppUser user = repository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String formatedRole = "ROLE_" + user.getRole().getName().toUpperCase();
+        System.out.println(">>> role authority : "+formatedRole);
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(formatedRole);
 
         return new org.springframework.security.core.userdetails.User(

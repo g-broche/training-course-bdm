@@ -4,26 +4,15 @@ import com.example.bdm.dto.*;
 import com.example.bdm.exception.EmailAlreadyExistsException;
 import com.example.bdm.exception.NoSuchRoleException;
 import com.example.bdm.model.AppUser;
-import com.example.bdm.repository.RoleRepository;
 import com.example.bdm.service.AuthService;
-import com.example.bdm.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/auth")
@@ -61,10 +50,19 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
             return ResponseEntity.ok(new AppUserDto(user));
         } catch (BadCredentialsException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body("Login failed due to server error");
         }
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie expiredCookie = authService.generateExpiredCookie();
+        response.addCookie(expiredCookie);
+        return ResponseEntity.ok().body("User disconnected");
     }
 
 }
