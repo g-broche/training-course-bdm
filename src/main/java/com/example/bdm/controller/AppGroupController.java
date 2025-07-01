@@ -13,7 +13,6 @@ import java.util.Optional;
 
 
 @RestController
-
 @RequestMapping("api/group")
 public class AppGroupController {
     private final AppGroupService appGroupService;
@@ -22,12 +21,11 @@ public class AppGroupController {
         this.appGroupService = appGroupService;
 
     }
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/fromList/{list_id}")
     public ResponseEntity<List<AppGroup>> getAllGroupFromList(@PathVariable Long list_id){
         return appGroupService.getAllGroupFromList(list_id);
     }
-    @PreAuthorize("hasRole('USER')")
+
     @GetMapping("/{id}")
     public ResponseEntity<AppGroup> getGroupDetail(@PathVariable Long id){
         return appGroupService.getGroupDetail(id);
@@ -35,5 +33,17 @@ public class AppGroupController {
     @PostMapping("/")
     public ResponseEntity<AppGroup> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
         return appGroupService.createGroup(appGroupDto);
+    }
+    @PostMapping("/")
+    public ResponseEntity<List<AppGroup>> createGroups(@Valid @RequestBody List<AppGroupDto> appGroupDto){
+        return appGroupService.createGroups(appGroupDto);
+    }
+    @PatchMapping("/id")
+    public ResponseEntity<AppGroup> updateGroup(@PathVariable Long id,@Valid @RequestBody AppGroupDto appGroupDto) {
+        return appGroupService.updateGroup(id, appGroupDto);
+    }
+    @DeleteMapping("/id")
+    public ResponseEntity<AppGroup> deleteGroup(@PathVariable Long id){
+        return appGroupService.deleteGroup(id);
     }
 }
