@@ -1,18 +1,15 @@
 package com.example.bdm.controller;
 
-import com.example.bdm.config.JwtProperties;
-import com.example.bdm.dto.RequestLogin;
-import com.example.bdm.dto.RequestRegister;
-import com.example.bdm.model.AppUser;
-import com.example.bdm.model.Role;
-import com.example.bdm.model.enums.AvailableRoles;
-import com.example.bdm.repository.AppUserRepository;
-import com.example.bdm.repository.RoleRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,12 +27,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import com.example.bdm.config.JwtProperties;
+import com.example.bdm.dto.RequestLogin;
+import com.example.bdm.dto.RequestRegister;
+import com.example.bdm.model.AppUser;
+import com.example.bdm.model.Role;
+import com.example.bdm.model.enums.AvailableRoles;
+import com.example.bdm.repository.AppUserRepository;
+import com.example.bdm.repository.RoleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")

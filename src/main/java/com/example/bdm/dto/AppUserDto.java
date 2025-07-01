@@ -1,8 +1,9 @@
 package com.example.bdm.dto;
 
 import com.example.bdm.model.AppUser;
-
 import java.sql.Timestamp;
+
+import com.example.bdm.model.AppUser;
 
 public class AppUserDto {
     private String firstName;

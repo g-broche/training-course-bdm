@@ -1,14 +1,17 @@
 package com.example.bdm.service;
 
-import com.example.bdm.model.AppUser;
-import com.example.bdm.repository.AppUserRepository;
+import java.util.List;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.bdm.model.AppUser;
+import com.example.bdm.repository.AppUserRepository;
 import java.util.List;
+
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
