@@ -2,11 +2,14 @@ package com.example.bdm.controller;
 
 import com.example.bdm.model.AppList;
 import com.example.bdm.dto.AppListDto;
+import com.example.bdm.model.AppUser;
 import com.example.bdm.model.Student;
 import com.example.bdm.service.AppListService;
 import com.example.bdm.mapper.AppListMapper;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,20 +77,48 @@ public class AppListController {
    @PutMapping("/{id}/updateNameList")
    public ResponseEntity<AppListDto> updateListName(@PathVariable Long id, @RequestBody AppListDto dto) {
 	  try {
-		 return service.findById(id)
-				 .map(existingList -> {
-					existingList.setName(dto.getName());
-					AppList updatedList = service.save(existingList);
-					return ResponseEntity.ok(mapper.toDTO(updatedList));
-				 })
-				 .orElse(ResponseEntity.notFound().build());
+		 return service.findById(id).map(existingList -> {
+			existingList.setName(dto.getName());
+			AppList updatedList = service.save(existingList);
+			return ResponseEntity.ok(mapper.toDTO(updatedList));
+		 }).orElse(ResponseEntity.notFound().build());
 	  } catch (Exception e) {
 		 return ResponseEntity.badRequest().build();
 	  }
    }
 
-   //TODO: Get all lists for current user
-   //TODO: Add student to list {id}/addStudent
+   //Get all lists for current user
+   @GetMapping("/getAllMyList")
+   public ResponseEntity<List<AppListDto>> getAllMyList() {
+	  try {
+		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		 //Might need to adjust
+		 AppUser currentUser = (AppUser) authentication.getPrincipal();
+		 Long currentUserId = currentUser.getId();
+
+		 List<AppList> userLists = service.findByUserId(currentUserId);
+
+		 List<AppListDto> userListDtos = userLists.stream().map(mapper::toDTO).toList();
+
+		 return ResponseEntity.ok(userListDtos);
+	  } catch (Exception e) {
+		 return ResponseEntity.badRequest().build();
+	  }
+   }
+
+   //Delete list /{id}/deleteList
+   @PutMapping("/{id}/deleteList")
+   public ResponseEntity<List<AppListDto>> deleteList(@PathVariable Long id) {
+	  try {
+		 if (service.findById(id).isEmpty()) {
+			return ResponseEntity.notFound().build();
+		 }
+		 service.deleteById(id);
+		 return ResponseEntity.noContent().build(); // HTTP 204 No Content
+	  } catch (Exception e) {
+		 return ResponseEntity.badRequest().build();
+	  }
+   }
    //TODO: Add group(s) to list {id}/addGroups
-   //TODO: Delete list deleteList/{id}
+   //TODO: Add new student to list {id}/addStudent
 }

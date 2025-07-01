@@ -11,6 +11,7 @@ import com.example.bdm.model.enums.Gender;
 import com.example.bdm.model.enums.Profile;
 import com.example.bdm.service.AppListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,7 +36,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
- //Unit tests for the AppListController
+ //Unit tests for the AppListController. Mostly made with Junie Pro
  //These tests use Mockito to mock the service and mapper dependencies
 @ExtendWith(MockitoExtension.class)
 public class AppListControllerTests {
@@ -114,7 +118,12 @@ public class AppListControllerTests {
       testAppListDto.setEditedAt(testAppList.getEditedAt());
    }
 
-   //Get all lists
+    @AfterAll
+    static void tearDownClass() {
+       System.out.println("_______AppListController tests completed_______");
+    }
+
+    //Get all lists - success
    @Test
    @WithMockUser(username = "testUser", password = "pass")
    void testGetAllAppLists_Success() throws Exception {
@@ -129,7 +138,7 @@ public class AppListControllerTests {
       verify(appListService, times(1)).findAll();
    }
 
-   //Create a list
+   //Create a list - success
    @Test
    @WithMockUser(username = "testUser", password = "pass")
    void testCreateAppList_Success() throws Exception {
@@ -147,7 +156,7 @@ public class AppListControllerTests {
       verify(appListMapper, times(1)).toDTO(any(AppList.class));
    }
 
-   //Get one list with id
+   //Get one list with id - success
    @Test
    @WithMockUser(username = "testUser", password = "pass")
    void testGetAppListById_Success() throws Exception {
@@ -162,7 +171,7 @@ public class AppListControllerTests {
       verify(appListMapper, times(1)).toDTO(any(AppList.class));
    }
 
-   //Fail to get list with not found id
+   //Get list with id - Not found
    @Test
    @WithMockUser(username = "testUser", password = "pass")
    void testGetAppListById_NotFound() throws Exception {
@@ -307,5 +316,97 @@ public class AppListControllerTests {
       verify(appListService, times(1)).findById(1L);
       verify(appListService, times(1)).save(any(AppList.class));
       verify(appListMapper, never()).toDTO(any(AppList.class));
+   }
+
+   //Get all lists for current user - Success
+   @Test
+   void testGetAllMyList_Success() throws Exception {
+      try {
+         List<AppList> userLists = Collections.singletonList(testAppList);
+
+         when(appListService.findByUserId(1L))
+                 .thenReturn(userLists);
+         when(appListMapper.toDTO(any(AppList.class)))
+                 .thenReturn(testAppListDto);
+
+         //Set up SecurityContextHolder with a mock Authentication
+         Authentication auth = new TestingAuthenticationToken(testUser, null, "ROLE_USER");
+         SecurityContextHolder.getContext().setAuthentication(auth);
+
+         mockMvc.perform(get("/api/lists/getAllMyList")
+                     .contentType(MediaType.APPLICATION_JSON))
+             .andExpect(status().isOk());
+
+         verify(appListService, times(1)).findByUserId(1L);
+         verify(appListMapper, times(1)).toDTO(any(AppList.class));
+      } finally {
+         //Clear the SecurityContext after the test
+         SecurityContextHolder.clearContext();
+      }
+   }
+
+   //Get all lists for current user - Bad Request
+   @Test
+   void testGetAllMyList_BadRequest() throws Exception {
+      try {
+         when(appListService.findByUserId(1L))
+                 .thenThrow(new RuntimeException("Database error"));
+
+         Authentication auth = new TestingAuthenticationToken(testUser, null, "ROLE_USER");
+         SecurityContextHolder.getContext().setAuthentication(auth);
+
+         mockMvc.perform(get("/api/lists/getAllMyList")
+                     .contentType(MediaType.APPLICATION_JSON))
+             .andExpect(status().isBadRequest());
+
+         verify(appListService, times(1)).findByUserId(1L);
+      } finally {
+         SecurityContextHolder.clearContext();
+      }
+   }
+
+   //Delete list - Success
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testDeleteList_Success() throws Exception {
+      when(appListService.findById(1L))
+              .thenReturn(Optional.of(testAppList));
+      doNothing().when(appListService).deleteById(1L);
+
+      mockMvc.perform(put("/api/lists/1/deleteList")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNoContent());
+
+      verify(appListService, times(1)).findById(1L);
+      verify(appListService, times(1)).deleteById(1L);
+   }
+
+   //Delete list - Not Found
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testDeleteList_NotFound() throws Exception {
+      when(appListService.findById(999L)).thenReturn(Optional.empty());
+
+      mockMvc.perform(put("/api/lists/999/deleteList")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNotFound());
+
+      verify(appListService, times(1)).findById(999L);
+      verify(appListService, never()).deleteById(anyLong());
+   }
+
+   //Delete list - Bad Request
+   @Test
+   @WithMockUser(username = "testUser", password = "pass")
+   void testDeleteList_BadRequest() throws Exception {
+      when(appListService.findById(1L)).thenReturn(Optional.of(testAppList));
+      doThrow(new RuntimeException("Database error")).when(appListService).deleteById(1L);
+
+      mockMvc.perform(put("/api/lists/1/deleteList")
+                  .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
+
+      verify(appListService, times(1)).findById(1L);
+      verify(appListService, times(1)).deleteById(1L);
    }
 }

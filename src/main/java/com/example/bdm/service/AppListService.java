@@ -37,18 +37,18 @@ public class AppListService implements AppListType {
 	  return repository.findByName(name);
    }
 
+   public List<AppList> findByUserId(Long userId) {
+	  return repository.findByUserId(userId);
+   }
+
    @Override
    public AppList update(AppList appList, Long id) {
 	  return repository.findById(id)
-			  .map(existing -> {
-				 existing.setName(appList.getName());
-				 existing.setUser(appList.getUser());
-				 existing.setStudents(appList.getStudents());
-				 existing.setCreatedAt(appList.getCreatedAt());
-				 existing.setEditedAt(appList.getEditedAt());
-				 return repository.save(existing);
+			  .map(existingList -> {
+				 existingList.setName(appList.getName());
+				 return repository.save(existingList);
 			  })
-			  .orElseThrow(() -> new RuntimeException("List not found"));
+			  .orElseThrow(() -> new RuntimeException("AppList not found with id: " + id));
    }
 
    @Override
