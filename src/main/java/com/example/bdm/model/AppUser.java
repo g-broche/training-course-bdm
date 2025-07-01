@@ -35,7 +35,7 @@ public class AppUser {
     @Column(name = "gdpr", nullable = false)
     private boolean gdpr;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 

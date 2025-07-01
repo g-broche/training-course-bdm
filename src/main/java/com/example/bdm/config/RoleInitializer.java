@@ -7,6 +7,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * Creates the two default roles based on the AvailableRoles enum to fill the
+ * database on app startup
+ */
 @Component
 public class RoleInitializer implements ApplicationRunner {
 
