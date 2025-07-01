@@ -24,6 +24,19 @@ import com.example.bdm.model.enums.AvailableRoles;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
 import com.example.bdm.utils.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.Arrays;
 
 /**
  * Service dedicated to actions related to signup, login and other features in the layer
@@ -81,13 +94,23 @@ public class AuthService {
 
     public ResponseCookie generateCookieFromUser(AppUser loggedUser){
         String token = jwtUtil.generateToken(loggedUser);
-        boolean mustBeSecure = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+//        boolean mustBeSecure = Arrays.asList(environment.getActiveProfiles()).contains("prod");
         return ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(mustBeSecure)
+                .secure(false)
                 .path("/")
-                .maxAge(Duration.ofHours(1))
+                .maxAge(Duration.ofDays(1))
                 .sameSite("Lax")
                 .build();
+    }
+
+    public Cookie generateExpiredCookie() {
+//        boolean mustBeSecure = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
     }
 }

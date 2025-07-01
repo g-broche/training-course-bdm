@@ -13,6 +13,13 @@ import com.example.bdm.dto.ResponseUserGdpr;
 import com.example.bdm.model.AppUser;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * Service dedicated to actions on User entity especially when it comes to interacting with the database

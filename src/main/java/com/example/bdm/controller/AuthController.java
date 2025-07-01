@@ -1,5 +1,12 @@
 package com.example.bdm.controller;
 
+import com.example.bdm.dto.*;
+import com.example.bdm.exception.EmailAlreadyExistsException;
+import com.example.bdm.exception.NoSuchRoleException;
+import com.example.bdm.model.AppUser;
+import com.example.bdm.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -19,6 +26,7 @@ import com.example.bdm.model.AppUser;
 import com.example.bdm.service.AuthService;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/auth")
@@ -56,11 +64,19 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
             return ResponseEntity.ok(new AppUserDto(user));
         } catch (BadCredentialsException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body("Login failed due to server error");
         }
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie expiredCookie = authService.generateExpiredCookie();
+        response.addCookie(expiredCookie);
+        return ResponseEntity.ok().body("User disconnected");
     }
 
 }

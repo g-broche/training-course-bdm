@@ -9,9 +9,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.NoSuchElementException;
-
+import com.example.bdm.dto.RequestUserGdprUpdate;
+import com.example.bdm.model.AppUser;
+import com.example.bdm.model.Role;
+import com.example.bdm.repository.AppUserRepository;
+import com.example.bdm.repository.RoleRepository;
+import com.example.bdm.utils.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,6 +61,9 @@ class AppUserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private Role role;
 
@@ -129,8 +138,16 @@ class AppUserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = { "Admin" })
     void deleteById_GivenValidId_ShouldDeleteCorrespondingUser() throws Exception{
+        Role adminRole = roleRepository.findByName("Admin").orElseThrow();
+        AppUser loggedInUser = userRepository.save(new AppUser(
+                "Test",
+                "User",
+                "testuser@example.com",
+                "password123",
+                adminRole // ensure this is an Admin role
+        ));
+
         AppUser userToDelete = userRepository.save(new AppUser(
                 "toDelete",
                 "toDelete",
@@ -140,7 +157,12 @@ class AppUserControllerTest {
         ));
         Long idToDelete = userToDelete.getId();
 
-        mockMvc.perform(delete("/api/users/"+idToDelete))
+        String jwt = jwtUtil.generateToken(loggedInUser);
+        MockCookie cookie = new MockCookie("jwt", jwt);
+        cookie.setHttpOnly(true);
+
+        mockMvc.perform(delete("/api/users/"+idToDelete)
+                .cookie(cookie))
                 .andExpect(status().isNoContent());
 
         assertThrows(NoSuchElementException.class, () -> userRepository.findById(idToDelete).orElseThrow());

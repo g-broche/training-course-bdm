@@ -57,7 +57,7 @@ public class SecurityConfig {
     }
 
     /**
-     * Globally disable auth requirement for API as Auth is yet to be implemented
+     * Access configuration relative to all routes
      * 
      * @param http HttpSecurity
      * @return configured http
@@ -68,7 +68,6 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
@@ -79,6 +78,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     *
+     * @param userDetailsService
+     * @return
+     */
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
@@ -86,6 +90,12 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
