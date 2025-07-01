@@ -1,6 +1,5 @@
-package com.example.bdm;
+package com.example.bdm.controller;
 
-import com.example.bdm.controller.*;
 import com.example.bdm.dto.AppListDto;
 import com.example.bdm.mapper.AppListMapper;
 import com.example.bdm.model.AppList;
@@ -373,7 +372,7 @@ public class AppListControllerTests {
               .thenReturn(Optional.of(testAppList));
       doNothing().when(appListService).deleteById(1L);
 
-      mockMvc.perform(put("/api/lists/1/deleteList")
+      mockMvc.perform(delete("/api/lists/1")
                   .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNoContent());
 
@@ -387,7 +386,7 @@ public class AppListControllerTests {
    void testDeleteList_NotFound() throws Exception {
       when(appListService.findById(999L)).thenReturn(Optional.empty());
 
-      mockMvc.perform(put("/api/lists/999/deleteList")
+      mockMvc.perform(delete("/api/lists/999")
                   .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound());
 
@@ -402,7 +401,7 @@ public class AppListControllerTests {
       when(appListService.findById(1L)).thenReturn(Optional.of(testAppList));
       doThrow(new RuntimeException("Database error")).when(appListService).deleteById(1L);
 
-      mockMvc.perform(put("/api/lists/1/deleteList")
+      mockMvc.perform(delete("/api/lists/1")
                   .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest());
 

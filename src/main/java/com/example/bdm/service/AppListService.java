@@ -4,12 +4,14 @@ import com.example.bdm.model.AppList;
 import com.example.bdm.repository.AppListRepository;
 import com.example.bdm.utils.AppListType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 //Intermediary between Controller and Repository
 @Service
+@Transactional
 public class AppListService implements AppListType {
 
    private final AppListRepository repository;

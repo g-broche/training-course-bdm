@@ -43,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // Second: If not in header, try to extract token from "token" cookie
         if (jwt == null && request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("token".equals(cookie.getName())) {
+                if ("jwt".equals(cookie.getName())) {
                     jwt = cookie.getValue();
                     break;
                 }

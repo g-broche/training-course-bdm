@@ -8,15 +8,16 @@ import com.example.bdm.service.AppListService;
 import com.example.bdm.mapper.AppListMapper;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/lists")
-@CrossOrigin(origins = "*")
+@RequestMapping("api/lists")
 public class AppListController {
 
    private final AppListService service;
@@ -28,54 +29,83 @@ public class AppListController {
    }
 
    //Get all lists
+   @PreAuthorize("hasRole('ADMIN')")
    @GetMapping
-   public List<AppList> getAllAppLists() {
-	  return service.findAll();
+   public ResponseEntity<?> getAllAppLists() {
+	  try {
+		 List<AppList> lists = service.findAll();
+		 List<AppListDto> listDtos = lists.stream()
+				 .map(mapper::toDTO)
+				 .toList();
+		 return ResponseEntity.ok(listDtos);
+	  } catch (Exception e) {
+		 throw new RuntimeException(e);
+	  }
    }
 
    //Create a list
    @PostMapping("/createList")
-   public ResponseEntity<AppListDto> createAppList(@RequestBody AppListDto dto){
-	  List<AppList> appListList = mapper.toEntity(dto);
-	  AppList appList = appListList.get(0);
-	  AppList saved = service.save(appList);
-	  return ResponseEntity.ok(mapper.toDTO(saved));
+   public ResponseEntity<?> createAppList(@RequestBody AppListDto dto){
+	  try {
+		 List<AppList> appListList = mapper.toEntity(dto);
+		 AppList appList = appListList.get(0);
+		 AppList saved = service.save(appList);
+		 return ResponseEntity.ok(mapper.toDTO(saved));
+	  } catch (Exception e) {
+		 throw new RuntimeException(e);
+	  }
    }
 
    //Get one list with id
+   //Response 500
    @GetMapping("/{id}")
-   public ResponseEntity<AppListDto> getAppListById(@PathVariable Long id) {
-	  return service.findById(id)
-			  .map(mapper::toDTO)
-			  .map(ResponseEntity::ok)
-			  .orElse(ResponseEntity.notFound().build());
+   public ResponseEntity<?> getAppListById(@PathVariable Long id) {
+	  try {
+		 AppListDto foundListData = service.findById(id)
+				 .map(mapper::toDTO)
+				 .orElseThrow(() -> new NoSuchElementException("List not found"));
+		 return ResponseEntity.ok(foundListData);
+	  } catch (NoSuchElementException e) {
+		 return ResponseEntity.status(404).body("No corresponding list found");
+	  } catch (Exception e) {
+		 throw new RuntimeException(e);
+	  }
    }
 
    //Get list with name
+   //Response 500
    @GetMapping("/searchList")
-   public ResponseEntity<List<AppListDto>> getAppListByName(@RequestParam String name) {
-	  List<AppList> lists = service.findByName(name);
+   public ResponseEntity<?> getAppListByName(@RequestParam String name) {
+	  try {
+		 List<AppList> lists = service.findByName(name);
 
-	  if (lists.isEmpty()) { return ResponseEntity.notFound().build(); }
+		 if (lists.isEmpty()) { return ResponseEntity.notFound().build(); }
 
-	  List<AppListDto> dtos = lists.stream()
-			  .map(mapper::toDTO)
-			  .toList();
+		 List<AppListDto> dtos = lists.stream()
+				.map(mapper::toDTO)
+				.toList();
 
-	  return ResponseEntity.ok(dtos);
+		 return ResponseEntity.ok(dtos);
+	  } catch (Exception e) {
+		 throw new RuntimeException(e);
+	  }
    }
 
    //Get all students in a list {id}/allStudents
    @GetMapping("/{id}/allStudents")
-   public ResponseEntity<List<Student>> getAllStudentsInList(@PathVariable Long id) {
-	  return service.findById(id)
-			  .map(appList -> ResponseEntity.ok(appList.getStudents()))
-			  .orElse(ResponseEntity.notFound().build());
+   public ResponseEntity<?> getAllStudentsInList(@PathVariable Long id) {
+	  try {
+		 return service.findById(id)
+				.map(appList -> ResponseEntity.ok(appList.getStudents()))
+				.orElse(ResponseEntity.notFound().build());
+	  } catch (Exception e) {
+		 throw new RuntimeException(e);
+	  }
    }
 
    //Update list name {id}/updateNameList
    @PutMapping("/{id}/updateNameList")
-   public ResponseEntity<AppListDto> updateListName(@PathVariable Long id, @RequestBody AppListDto dto) {
+   public ResponseEntity<?> updateListName(@PathVariable Long id, @RequestBody AppListDto dto) {
 	  try {
 		 return service.findById(id).map(existingList -> {
 			existingList.setName(dto.getName());
@@ -88,8 +118,9 @@ public class AppListController {
    }
 
    //Get all lists for current user
+   //Response empty
    @GetMapping("/getAllMyList")
-   public ResponseEntity<List<AppListDto>> getAllMyList() {
+   public ResponseEntity<?> getAllMyList() {
 	  try {
 		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		 //Might need to adjust
@@ -98,7 +129,9 @@ public class AppListController {
 
 		 List<AppList> userLists = service.findByUserId(currentUserId);
 
-		 List<AppListDto> userListDtos = userLists.stream().map(mapper::toDTO).toList();
+		 List<AppListDto> userListDtos = userLists.stream()
+				 .map(mapper::toDTO)
+				 .toList();
 
 		 return ResponseEntity.ok(userListDtos);
 	  } catch (Exception e) {
@@ -107,8 +140,8 @@ public class AppListController {
    }
 
    //Delete list /{id}/deleteList
-   @PutMapping("/{id}/deleteList")
-   public ResponseEntity<List<AppListDto>> deleteList(@PathVariable Long id) {
+   @DeleteMapping("/{id}")
+   public ResponseEntity<?> deleteList(@PathVariable Long id) {
 	  try {
 		 if (service.findById(id).isEmpty()) {
 			return ResponseEntity.notFound().build();
