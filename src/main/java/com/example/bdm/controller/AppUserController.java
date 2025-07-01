@@ -6,6 +6,7 @@ import com.example.bdm.dto.ResponseUserGdpr;
 import com.example.bdm.service.UserService;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -81,6 +82,7 @@ public class AppUserController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             userService.deleteUserById(id);

@@ -1,7 +1,7 @@
 package com.example.bdm.config;
 
-import com.example.bdm.service.CustomUserDetailsService;
-import com.example.bdm.utils.JwtFilter;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +11,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -23,7 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.example.bdm.service.CustomUserDetailsService;
+import com.example.bdm.utils.JwtFilter;
 
 /**
  * Class handling configuration of security elements such as password hashing and authorized connection
@@ -58,7 +57,7 @@ public class SecurityConfig {
     }
 
     /**
-     * Globally disable auth requirement for API as Auth is yet to be implemented
+     * Access configuration relative to all routes
      * 
      * @param http HttpSecurity
      * @return configured http
@@ -69,7 +68,6 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
@@ -80,6 +78,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     *
+     * @param userDetailsService
+     * @return
+     */
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
@@ -87,6 +90,12 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)

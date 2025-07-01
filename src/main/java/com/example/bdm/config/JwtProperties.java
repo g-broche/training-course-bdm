@@ -3,6 +3,9 @@ package com.example.bdm.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Manage properties used for JWT by importing them from the application config
+ */
 @Component
 @ConfigurationProperties(prefix = "app.jwt")
 public class JwtProperties {
