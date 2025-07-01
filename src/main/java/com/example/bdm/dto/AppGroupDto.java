@@ -42,7 +42,6 @@ public class AppGroupDto {
         this.name = name;
     }
     public Long getListId() {
-        System.out.println(listId);
         return listId;
     }
     public void setListId(Long listId){

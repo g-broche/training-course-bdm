@@ -76,6 +76,7 @@ public class AuthService {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
+
         return userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
     }
 

@@ -63,7 +63,8 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Login failed due to server error");
+
+            return ResponseEntity.internalServerError().body("Login failed due to server error"+ e);
         }
     }
 
