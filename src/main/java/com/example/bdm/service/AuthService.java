@@ -1,5 +1,18 @@
 package com.example.bdm.service;
 
+import java.time.Duration;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.example.bdm.dto.RequestLogin;
 import com.example.bdm.dto.RequestRegister;
 import com.example.bdm.exception.EmailAlreadyExistsException;
@@ -11,19 +24,6 @@ import com.example.bdm.model.enums.AvailableRoles;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
 import com.example.bdm.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.time.Duration;
-import java.util.Arrays;
 
 /**
  * Service dedicated to actions related to signup, login and other features in the layer

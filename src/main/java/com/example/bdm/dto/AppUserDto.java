@@ -1,15 +1,8 @@
 package com.example.bdm.dto;
 
-import com.example.bdm.model.AppUser;
-import com.example.bdm.model.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.sql.Timestamp;
+
+import com.example.bdm.model.AppUser;
 
 public class AppUserDto {
     private Long id;
