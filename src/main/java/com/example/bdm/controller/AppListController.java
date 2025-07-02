@@ -113,7 +113,7 @@ public class AppListController {
 			return ResponseEntity.ok(mapper.toDTO(updatedList));
 		 }).orElse(ResponseEntity.notFound().build());
 	  } catch (Exception e) {
-		 return ResponseEntity.badRequest().build();
+		 throw new RuntimeException(e);
 	  }
    }
 
@@ -135,13 +135,13 @@ public class AppListController {
 
 		 return ResponseEntity.ok(userListDtos);
 	  } catch (Exception e) {
-		 return ResponseEntity.badRequest().build();
+		 throw new RuntimeException(e);
 	  }
    }
 
    //Delete list /{id}/deleteList
    @DeleteMapping("/{id}")
-   public ResponseEntity<?> deleteList(@PathVariable Long id) {
+   public ResponseEntity<Void> deleteList(@PathVariable Long id) {
 	  try {
 		 if (service.findById(id).isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -149,7 +149,7 @@ public class AppListController {
 		 service.deleteById(id);
 		 return ResponseEntity.noContent().build(); // HTTP 204 No Content
 	  } catch (Exception e) {
-		 return ResponseEntity.badRequest().build();
+		 throw new RuntimeException(e);
 	  }
    }
    //TODO: Add group(s) to list {id}/addGroups
