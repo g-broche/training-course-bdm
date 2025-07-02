@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.bdm.model.AppUser;
 import com.example.bdm.repository.AppUserRepository;
-import java.util.List;
 
 
 @Service

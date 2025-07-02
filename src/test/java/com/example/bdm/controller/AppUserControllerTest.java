@@ -9,14 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.NoSuchElementException;
-import com.example.bdm.dto.RequestUserGdprUpdate;
-import com.example.bdm.model.AppUser;
-import com.example.bdm.model.Role;
-import com.example.bdm.repository.AppUserRepository;
-import com.example.bdm.repository.RoleRepository;
-import com.example.bdm.utils.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +34,7 @@ import com.example.bdm.model.AppUser;
 import com.example.bdm.model.Role;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
+import com.example.bdm.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

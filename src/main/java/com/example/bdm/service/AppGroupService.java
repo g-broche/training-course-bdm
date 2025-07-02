@@ -1,18 +1,16 @@
 package com.example.bdm.service;
 
-import com.example.bdm.dto.AppGroupDto;
-import com.example.bdm.model.AppGroup;
-import com.example.bdm.model.AppList;
-import com.example.bdm.repository.AppGroupRepository;
-import org.springframework.http.HttpStatus;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.example.bdm.dto.AppGroupDto;
+import com.example.bdm.model.AppGroup;
+import com.example.bdm.repository.AppGroupRepository;
 
 @Service
 public class AppGroupService {
