@@ -45,36 +45,36 @@ public class AppGroupService {
         return ResponseEntity.ok(appGroupRepository.save(appGroup));
     }
     // A terminer
-    public  ResponseEntity<List<AppGroup>> createGroups(List<AppGroupDto> appGroups){
-        // Vérification de si la list existe
-//         Optional<AppList> existingList =
-        // Vérification de si la list appartient bien à l'user
-        // Vérification de si le nom de la liste est déjà utiliser par l'user
-        List<AppGroup> savedGroups = new ArrayList<>();
-        for(AppGroupDto dto : appGroups) {
+//     public  ResponseEntity<List<AppGroup>> createGroups(List<AppGroupDto> appGroups){
+//         // Vérification de si la list existe
+// //         Optional<AppList> existingList =
+//         // Vérification de si la list appartient bien à l'user
+//         // Vérification de si le nom de la liste est déjà utiliser par l'user
+//         List<AppGroup> savedGroups = new ArrayList<>();
+    //     for(AppGroupDto dto : appGroups) {
 
 
-            AppGroup group = new AppGroup();
-            group.setName(dto.getName());
-            group.setList(dto.getListId());
-            group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            group.setEditedAt(new Timestamp(System.currentTimeMillis()));
+    //         AppGroup group = new AppGroup();
+    //         group.setName(dto.getName());
+    //         group.setList(dto.getListId());
+    //         group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    //         group.setEditedAt(new Timestamp(System.currentTimeMillis()));
 
-            AppGroup savedGroup = appGroupRepository.save(group);
-            savedGroups.add(savedGroup);
-        }
-    }
-    public ResponseEntity<AppGroup> updateGroup(Long id,AppGroupDto appGroupDto){
-        Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
-        if(existingGroup.isEmpty()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
-    public ResponseEntity<AppGroup> deleteGroup(Long id){
-        Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
-        if(existingGroup.isEmpty()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
+    //         AppGroup savedGroup = appGroupRepository.save(group);
+    //         savedGroups.add(savedGroup);
+    //     }
+    // }
+    // public ResponseEntity<AppGroup> updateGroup(Long id,AppGroupDto appGroupDto){
+    //     Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
+    //     if(existingGroup.isEmpty()){
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //     }
+    // }
+    // public ResponseEntity<?> deleteGroup(Long id){
+    //     Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
+    //     if(existingGroup.isEmpty()){
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //     }
+    // }
 
 }

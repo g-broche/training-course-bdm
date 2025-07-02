@@ -34,16 +34,16 @@ public class AppGroupController {
     public ResponseEntity<AppGroup> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
         return appGroupService.createGroup(appGroupDto);
     }
-    @PostMapping("/")
-    public ResponseEntity<List<AppGroup>> createGroups(@Valid @RequestBody List<AppGroupDto> appGroupDto){
-        return appGroupService.createGroups(appGroupDto);
-    }
-    @PatchMapping("/id")
-    public ResponseEntity<AppGroup> updateGroup(@PathVariable Long id,@Valid @RequestBody AppGroupDto appGroupDto) {
-        return appGroupService.updateGroup(id, appGroupDto);
-    }
-    @DeleteMapping("/id")
-    public ResponseEntity<AppGroup> deleteGroup(@PathVariable Long id){
-        return appGroupService.deleteGroup(id);
-    }
+    // @PostMapping("/")
+    // public ResponseEntity<List<AppGroup>> createGroups(@Valid @RequestBody List<AppGroupDto> appGroupDto){
+    //     return appGroupService.createGroups(appGroupDto);
+    // }
+    // @PatchMapping("/id")
+    // public ResponseEntity<AppGroup> updateGroup(@PathVariable Long id,@Valid @RequestBody AppGroupDto appGroupDto) {
+    //     return appGroupService.updateGroup(id, appGroupDto);
+    // }
+    // @DeleteMapping("/id")
+    // public ResponseEntity<AppGroup> deleteGroup(@PathVariable Long id){
+    //     return appGroupService.deleteGroup(id);
+    // }
 }
