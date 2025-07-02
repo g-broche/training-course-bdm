@@ -34,6 +34,7 @@ public class JwtUtil {
                 .claim("lastName", user.getLastName())
                 .claim("isActive", user.getIsActive())
                 .claim("gdpr", user.getGdpr())
+                .claim("userCreatedAt", user.getCreatedAt().getTime())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationMs()))
                 .signWith(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()), SignatureAlgorithm.HS256)

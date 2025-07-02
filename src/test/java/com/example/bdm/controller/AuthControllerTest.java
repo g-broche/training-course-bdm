@@ -118,7 +118,7 @@ class AuthControllerTest {
                 roleUser
         );
         existingUser.setGdpr(true);
-        Long userId = userRepository.save(existingUser).getId();
+        AppUser savedUser = userRepository.save(existingUser);
         RequestLogin loginData = new RequestLogin("jane.doe@test.test", rawPassword);
         MvcResult result = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -155,11 +155,12 @@ class AuthControllerTest {
 
         Claims claims = jwsClaims.getBody();
         assertEquals("jane.doe@test.test", claims.getSubject());
-        assertEquals(userId, claims.get("id", Long.class));
+        assertEquals(savedUser.getId(), claims.get("id", Long.class));
         assertEquals("Jane", claims.get("firstName", String.class));
         assertEquals("Doe", claims.get("lastName", String.class));
         assertEquals(false, claims.get("isActive", Boolean.class));
         assertEquals(true, claims.get("gdpr", Boolean.class));
+        assertEquals(savedUser.getCreatedAt().getTime(), claims.get("userCreatedAt", Long.class));
         assertNotNull(claims.getIssuedAt());
         assertNotNull(claims.getExpiration());
         assertTrue(claims.getExpiration().after(new Date()));
