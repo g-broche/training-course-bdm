@@ -35,7 +35,7 @@ public class AppGroupController {
     public ResponseEntity<AppGroup> getGroupDetail(@PathVariable Long id){
         return appGroupService.getGroupDetail(id);
     }
-    @PostMapping("/")
+    @PostMapping("/truc")
     public ResponseEntity<AppGroup> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
         return appGroupService.createGroup(appGroupDto);
     }
