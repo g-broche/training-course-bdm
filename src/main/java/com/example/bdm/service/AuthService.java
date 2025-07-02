@@ -2,6 +2,7 @@ package com.example.bdm.service;
 
 import com.example.bdm.dto.RequestLogin;
 import com.example.bdm.dto.RequestRegister;
+import com.example.bdm.exception.ActivationTokenGenerationException;
 import com.example.bdm.exception.EmailAlreadyExistsException;
 import com.example.bdm.exception.NoSuchRoleException;
 import com.example.bdm.exception.UserNotCreatedException;
@@ -10,6 +11,7 @@ import com.example.bdm.model.Role;
 import com.example.bdm.model.enums.AvailableRoles;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
+import com.example.bdm.utils.ActivationTokenUtil;
 import com.example.bdm.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Service dedicated to actions related to signup, login and other features in the layer
@@ -99,5 +103,36 @@ public class AuthService {
         cookie.setPath("/");
         cookie.setMaxAge(0);
         return cookie;
+    }
+
+    public boolean validateRegistrationToken(String token) {
+        try {
+            AppUser user = userRepository.findByActivationToken(token).orElseThrow();
+            user.setIsActive(true);
+            user.setActivationToken(null);
+            return true;
+        } catch (NoSuchElementException e){
+            return false;
+        }
+    }
+
+    private String generateRegistrationToken(AppUser registeringUser){
+        Set<String> existingTokens = userRepository.findAllNonNullActivationTokens();
+        String activationToken = ActivationTokenUtil.generateToken();;
+        boolean mustCreateToken = true;
+        int maxAttempts = 5;
+        int currentAttempt = 1;
+        while(mustCreateToken && currentAttempt <= maxAttempts){
+            if (!existingTokens.contains(activationToken)){
+                mustCreateToken = false;
+            } else {
+                currentAttempt++;
+                activationToken = ActivationTokenUtil.generateToken();
+            }
+        }
+        if(mustCreateToken) {
+            throw new ActivationTokenGenerationException();
+        }
+        return activationToken;
     }
 }
