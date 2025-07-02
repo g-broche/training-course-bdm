@@ -32,29 +32,25 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        System.out.println(">>> JwtFilter triggered: " + request.getRequestURI());
         try{
             String jwt = null;
             String username = null;
 
-            System.out.println(">>> STARTING FILTER");
+        // First: Try to extract token from Authorization header
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7); // strip "Bearer "
+        }
 
-            // First: Try to extract token from Authorization header
-            final String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                jwt = authHeader.substring(7);
-            }
-            // Second: If not in header, try to extract token from cookie
-            if (jwt == null && request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if ("jwt".equals(cookie.getName())) {
-                        jwt = cookie.getValue();
-                        break;
-                    }
+        // Second: If not in header, try to extract token from "token" cookie
+        if (jwt == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                    break;
                 }
             }
-
-            System.out.println(">>> JWT : "+jwt);
+        }
 
             if (jwt != null) {
                 try {
