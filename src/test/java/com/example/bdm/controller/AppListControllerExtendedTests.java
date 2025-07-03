@@ -92,7 +92,7 @@ public class AppListControllerExtendedTests {
         testUser.setLastName("testUserLastName");
         testUser.setEmail("test@example.com");
         testUser.setPassword("password");
-        testUser.setActive(true);
+        testUser.setIsActive(true);
         testUser.setGdpr(true);
         testUser.setRole(testRole);
 

@@ -1,32 +1,6 @@
 package com.example.bdm.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Date;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.example.bdm.TestConfig;
 import com.example.bdm.config.JwtProperties;
 import com.example.bdm.dto.RequestLogin;
 import com.example.bdm.dto.RequestRegister;
@@ -36,11 +10,38 @@ import com.example.bdm.model.enums.AvailableRoles;
 import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
@@ -51,6 +52,7 @@ import io.jsonwebtoken.security.Keys;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestConfig.class)
 class AuthControllerTest {
     @Autowired
     private AppUserRepository userRepository;
@@ -68,6 +70,9 @@ class AuthControllerTest {
     @Autowired
     private JwtProperties jwtProperties;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
     private Role roleAdmin;
     private Role roleUser;
 
@@ -80,6 +85,12 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+    }
+
+    @BeforeEach
+    public void setupMockMailSender() {
+        MimeMessage mimeMessage = new MimeMessage((Session) null); // use default Session
+        Mockito.when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
     }
 
     @Test
@@ -105,6 +116,23 @@ class AuthControllerTest {
                 passwordEncoder.matches(registerData.getPassword(), createdUser.getPassword()),
                 "Hashed password should match clear password"
         );
+    }
+
+    @Test
+    @Transactional
+    void testRegisterUser_GivenFullInvalidRequest_ReturnsBadRequestAndAllErrorMessage() throws Exception {
+        RequestRegister registerData = new RequestRegister(
+                        "J",
+                        "D",
+                        "john.doe@test.t",
+                        "Test"
+        );
+
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registerData)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.length()").value(4));
     }
 
     @Test
