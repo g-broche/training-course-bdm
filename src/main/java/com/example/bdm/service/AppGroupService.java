@@ -33,9 +33,10 @@ public class AppGroupService {
         }
         return ResponseEntity.notFound().build();
     }
-    public  ResponseEntity<AppGroup> createGroup(AppGroupDto appGroupDto){
+    public  ResponseEntity<AppGroupDto> createGroup(AppGroupDto appGroupDto){
          Optional<AppList> existingList = appListRepository.findById(appGroupDto.getListId());
          if(existingList.isEmpty()){
+             System.out.println("bah ca trouve pas la list");
              return ResponseEntity.notFound().build();
          }
         // Vérification de si la list appartient bien à l'user
@@ -45,8 +46,7 @@ public class AppGroupService {
         appGroup.setList(existingList.get());
         appGroup.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         appGroup.setEditedAt(new Timestamp(System.currentTimeMillis()));
-
-        return ResponseEntity.ok(appGroupRepository.save(appGroup));
+        return ResponseEntity.ok(new AppGroupDto(appGroupRepository.save(appGroup)));
     }
     // A terminer
 //     public  ResponseEntity<List<AppGroup>> createGroups(List<AppGroupDto> appGroups){

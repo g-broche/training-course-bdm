@@ -169,11 +169,11 @@ public class AppListController {
       try {
          return service.findById(id)
                 .map(existingList -> {
-                   List<AppGroup> createdGroups = new ArrayList<>();
+                   List<AppGroupDto> createdGroups = new ArrayList<>();
 
                    for (AppGroupDto dto : groupDtos) {
-                      dto.setListId(existingList);
-                      ResponseEntity<AppGroup> response = groupService.createGroup(dto);
+                      dto.setListId(existingList.getId());
+                      ResponseEntity<AppGroupDto> response = groupService.createGroup(dto);
 
                       if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                          createdGroups.add(response.getBody());
