@@ -13,6 +13,7 @@ import com.example.bdm.repository.AppUserRepository;
 import com.example.bdm.repository.RoleRepository;
 import com.example.bdm.utils.ActivationTokenUtil;
 import com.example.bdm.utils.JwtUtil;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -23,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -43,25 +45,33 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authManager;
     private JwtUtil jwtUtil;
+    private EmailService emailService;
 
     public AuthService(
             AppUserRepository userRepository,
             RoleRepository roleRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authManager,
-            JwtUtil jwtUtil) {
+            JwtUtil jwtUtil,
+            EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
     }
 
-    public AppUser registerNewUser(RequestRegister registerData){
+    /**
+     * Creates and persists a new user from signup data
+     * @param registerData
+     * @return
+     * @throws MessagingException
+     */
+    public AppUser registerNewUser(RequestRegister registerData) throws MessagingException {
         if (userRepository.existsByEmail(registerData.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
-
             AppUser newUser = new AppUser();
             newUser.setFirstName(registerData.getFirstName());
             newUser.setLastName(registerData.getLastName());
@@ -71,11 +81,20 @@ public class AuthService {
             Role userRole = roleRepository.findByName(AvailableRoles.USER.toString())
                     .orElseThrow( () -> new NoSuchRoleException("The default user role has not been set up"));
             newUser.setRole(userRole);
+            String activationToken = generateRegistrationToken();
+            newUser.setActivationToken(activationToken);
             userRepository.save(newUser);
-            return userRepository.findByEmail(newUser.getEmail())
+            AppUser createdUser = userRepository.findByEmail(newUser.getEmail())
                     .orElseThrow(UserNotCreatedException::new);
+            emailService.sendRegistrationActivationEmail(createdUser, activationToken);
+            return createdUser;
     }
 
+    /**
+     * Gets and returns user corresponding to credentials if such a user exists
+     * @param request
+     * @return
+     */
     public AppUser getUserFromLogin(RequestLogin request){
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -83,6 +102,11 @@ public class AuthService {
         return userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
     }
 
+    /**
+     * Generates the cookie containing the token representing a logged user
+     * @param loggedUser
+     * @return cookie
+     */
     public ResponseCookie generateCookieFromUser(AppUser loggedUser){
         String token = jwtUtil.generateToken(loggedUser);
 //        boolean mustBeSecure = Arrays.asList(environment.getActiveProfiles()).contains("prod");
@@ -95,6 +119,10 @@ public class AuthService {
                 .build();
     }
 
+    /**
+     * Generates a expired jwt cookie to be send and remove the jwt cookie
+     * @return Cookie
+     */
     public Cookie generateExpiredCookie() {
 //        boolean mustBeSecure = Arrays.asList(environment.getActiveProfiles()).contains("prod");
         Cookie cookie = new Cookie("jwt", null);
@@ -105,23 +133,34 @@ public class AuthService {
         return cookie;
     }
 
+    /**
+     * Given a token, will search for a user having the same activationToken and if
+     * such user exists it will be set to active and its existing token set back to null
+     * @param token
+     * @return boolean
+     */
+    @Transactional
     public boolean validateRegistrationToken(String token) {
-        try {
             AppUser user = userRepository.findByActivationToken(token).orElseThrow();
             user.setIsActive(true);
             user.setActivationToken(null);
+            userRepository.save(user);
+
             return true;
-        } catch (NoSuchElementException e){
-            return false;
-        }
     }
 
-    private String generateRegistrationToken(AppUser registeringUser){
+    /**
+     * Generates a random token to be used to validate registration. Ensures the token
+     * don't already exist beforehand
+     * @return String
+     */
+    private String generateRegistrationToken(){
         Set<String> existingTokens = userRepository.findAllNonNullActivationTokens();
         String activationToken = ActivationTokenUtil.generateToken();;
         boolean mustCreateToken = true;
-        int maxAttempts = 5;
+        int maxAttempts = 10;
         int currentAttempt = 1;
+        // prevent collision with other users existing token
         while(mustCreateToken && currentAttempt <= maxAttempts){
             if (!existingTokens.contains(activationToken)){
                 mustCreateToken = false;

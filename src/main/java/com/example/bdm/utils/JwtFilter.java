@@ -30,12 +30,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        System.out.println(">>> JwtFilter triggered: " + request.getRequestURI());
         try{
             String jwt = null;
             String username = null;
-
-            System.out.println(">>> STARTING FILTER");
 
             // First: Try to extract token from Authorization header
             final String authHeader = request.getHeader("Authorization");
@@ -53,12 +50,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
 
-            System.out.println(">>> JWT : "+jwt);
-
             if (jwt != null) {
                 try {
                     username = jwtUtil.extractUsername(jwt);
-                    System.out.println(">>> 'username' : "+username);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

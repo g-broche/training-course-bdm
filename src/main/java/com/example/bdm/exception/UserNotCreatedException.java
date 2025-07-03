@@ -10,6 +10,6 @@ public class UserNotCreatedException extends RuntimeException {
     }
 
     public UserNotCreatedException() {
-        super("A new user was not created due to an error");
+        super("A new user was not created during registration due to an error");
     }
 }
