@@ -1,5 +1,17 @@
 package com.example.bdm.service;
 
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.example.bdm.dto.RequestLogin;
 import com.example.bdm.dto.RequestRegister;
 import com.example.bdm.exception.ActivationTokenGenerationException;
@@ -30,6 +42,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
 
 /**
  * Service dedicated to actions related to signup, login and other features in the layer
@@ -99,6 +112,7 @@ public class AuthService {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
+
         return userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
     }
 

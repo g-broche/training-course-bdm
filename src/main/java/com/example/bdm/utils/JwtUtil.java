@@ -1,15 +1,16 @@
 package com.example.bdm.utils;
 
-import com.example.bdm.config.JwtProperties;
-import com.example.bdm.model.AppUser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
+import java.util.Date;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import com.example.bdm.config.JwtProperties;
+import com.example.bdm.model.AppUser;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
@@ -23,6 +24,12 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole())
+                .claim("id", user.getId())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
+                .claim("isActive", user.getIsActive())
+                .claim("gdpr", user.getGdpr())
+                .claim("userCreatedAt", user.getCreatedAt().getTime())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationMs()))
                 .signWith(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()), SignatureAlgorithm.HS256)
@@ -61,4 +68,6 @@ public class JwtUtil {
                 .getExpiration();
         return expiration.before(new Date());
     }
+
+
 }

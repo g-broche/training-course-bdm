@@ -1,7 +1,7 @@
 package com.example.bdm.config;
 
-import com.example.bdm.service.CustomUserDetailsService;
-import com.example.bdm.utils.JwtFilter;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.example.bdm.service.CustomUserDetailsService;
+import com.example.bdm.utils.JwtFilter;
 
 /**
  * Class handling configuration of security elements such as password hashing and authorized connection

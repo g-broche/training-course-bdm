@@ -20,7 +20,7 @@ public class AppList {
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST) //Persist => only when creating entities
     @JoinTable(name = "list_student", joinColumns = @JoinColumn(name = "list_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
     private List<Student> students = new ArrayList<>();
 
