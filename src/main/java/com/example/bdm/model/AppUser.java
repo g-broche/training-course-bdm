@@ -63,6 +63,7 @@ public class AppUser {
     }
 
     public void setFirstName(String firstName) {
+
         this.firstName = firstName;
     }
 
@@ -94,7 +95,7 @@ public class AppUser {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 

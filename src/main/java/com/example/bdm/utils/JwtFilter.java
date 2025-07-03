@@ -36,6 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwt = null;
             String username = null;
 
+
         // First: Try to extract token from Authorization header
         final String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -52,10 +53,10 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
+
             if (jwt != null) {
                 try {
                     username = jwtUtil.extractUsername(jwt);
-                    System.out.println(">>> 'username' : "+username);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
