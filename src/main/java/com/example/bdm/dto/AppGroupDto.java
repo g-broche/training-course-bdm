@@ -15,7 +15,6 @@ public class AppGroupDto {
     @Size(max = 50)
     private  String name;
 
-    @NotNull(message = "listId is required")
     private Long listId;
     private Timestamp createdAt;
     private Timestamp updatedAt;

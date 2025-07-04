@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.example.bdm.model.AppList;
 import com.example.bdm.repository.AppListRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,21 +28,25 @@ public class AppGroupService {
     public ResponseEntity<List<AppGroup>>getAllGroupFromList(@PathVariable Long list_id){
         return ResponseEntity.ok(appGroupRepository.findByList_Id(list_id));
     }
-    public ResponseEntity<AppGroup> getGroupDetail(@PathVariable Long id){
+    public ResponseEntity<AppGroupDto> getGroupDetail(@PathVariable Long id){
         Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
         if(existingGroup.isPresent()){
-          return ResponseEntity.ok(existingGroup.get());
+          return ResponseEntity.ok(new AppGroupDto(existingGroup.get()));
         }
         return ResponseEntity.notFound().build();
     }
-    public  ResponseEntity<AppGroupDto> createGroup(AppGroupDto appGroupDto){
+    public  ResponseEntity<AppGroupDto> createGroup(HttpServletRequest request, AppGroupDto appGroupDto){
          Optional<AppList> existingList = appListRepository.findById(appGroupDto.getListId());
          if(existingList.isEmpty()){
-             System.out.println("bah ca trouve pas la list");
              return ResponseEntity.notFound().build();
          }
-        // Vérification de si la list appartient bien à l'user
-        // Vérification de si le nom de la liste est déjà utiliser par l'user
+         Long userId =  (Long) request.getAttribute("id");
+         if(userId == null){
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         }
+         if(!existingList.get().getUser().getId().equals(userId)){
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         }
         AppGroup appGroup = new AppGroup();
         appGroup.setName(appGroupDto.getName());
         appGroup.setList(existingList.get());
@@ -48,32 +54,25 @@ public class AppGroupService {
         appGroup.setEditedAt(new Timestamp(System.currentTimeMillis()));
         return ResponseEntity.ok(new AppGroupDto(appGroupRepository.save(appGroup)));
     }
-    // A terminer
-//     public  ResponseEntity<List<AppGroup>> createGroups(List<AppGroupDto> appGroups){
-//         // Vérification de si la list existe
-// //         Optional<AppList> existingList =
-//         // Vérification de si la list appartient bien à l'user
-//         // Vérification de si le nom de la liste est déjà utiliser par l'user
-//         List<AppGroup> savedGroups = new ArrayList<>();
-    //     for(AppGroupDto dto : appGroups) {
-
-
-    //         AppGroup group = new AppGroup();
-    //         group.setName(dto.getName());
-    //         group.setList(dto.getListId());
-    //         group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-    //         group.setEditedAt(new Timestamp(System.currentTimeMillis()));
-
-    //         AppGroup savedGroup = appGroupRepository.save(group);
-    //         savedGroups.add(savedGroup);
-    //     }
-    // }
-    // public ResponseEntity<AppGroup> updateGroup(Long id,AppGroupDto appGroupDto){
-    //     Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
-    //     if(existingGroup.isEmpty()){
-    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    //     }
-    // }
+     public ResponseEntity<AppGroupDto> updateGroup(HttpServletRequest request,Long groupId, Long listId,AppGroupDto appGroupDto){
+         Optional<AppGroup> existingGroup = appGroupRepository.findById(groupId);
+         if(existingGroup.isEmpty()){
+             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+         }
+         if(!existingGroup.get().getList().getId().equals(listId)){
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         }
+         Long userId =  (Long) request.getAttribute("id");
+         if(userId == null){
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         }
+         if(!existingGroup.get().getList().getUser().getId().equals(userId)){
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         }
+          existingGroup.get().setName(appGroupDto.getName());
+         AppGroup savedGroup = existingGroup.get();
+         return ResponseEntity.ok(new AppGroupDto(savedGroup));
+     }
     // public ResponseEntity<?> deleteGroup(Long id){
     //     Optional<AppGroup> existingGroup = appGroupRepository.findById(id);
     //     if(existingGroup.isEmpty()){
