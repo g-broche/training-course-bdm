@@ -68,6 +68,13 @@ public class JwtUtil {
                 .getExpiration();
         return expiration.before(new Date());
     }
-
+    public Long extractUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
+    }
 
 }

@@ -2,13 +2,9 @@ package com.example.bdm.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.bdm.dto.AppGroupDto;
 import com.example.bdm.model.AppGroup;
@@ -32,21 +28,17 @@ public class AppGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppGroup> getGroupDetail(@PathVariable Long id){
+    public ResponseEntity<AppGroupDto> getGroupDetail(@PathVariable Long id){
         return appGroupService.getGroupDetail(id);
     }
     @PostMapping("/")
-    public ResponseEntity<AppGroup> createGroup(@Valid @RequestBody AppGroupDto appGroupDto){
-        return appGroupService.createGroup(appGroupDto);
+    public ResponseEntity<AppGroupDto> createGroup(HttpServletRequest request, @Valid @RequestBody AppGroupDto appGroupDto){
+        return appGroupService.createGroup(request,appGroupDto);
     }
-    // @PostMapping("/")
-    // public ResponseEntity<List<AppGroup>> createGroups(@Valid @RequestBody List<AppGroupDto> appGroupDto){
-    //     return appGroupService.createGroups(appGroupDto);
-    // }
-    // @PatchMapping("/id")
-    // public ResponseEntity<AppGroup> updateGroup(@PathVariable Long id,@Valid @RequestBody AppGroupDto appGroupDto) {
-    //     return appGroupService.updateGroup(id, appGroupDto);
-    // }
+     @PatchMapping("/{groupId}/fromList/{listId}")
+     public ResponseEntity<AppGroupDto> updateGroup(HttpServletRequest request,@PathVariable Long groupId,@PathVariable Long listId,@Valid @RequestBody AppGroupDto appGroupDto) {
+         return appGroupService.updateGroup(request,groupId, listId, appGroupDto);
+     }
     // @DeleteMapping("/id")
     // public ResponseEntity<AppGroup> deleteGroup(@PathVariable Long id){
     //     return appGroupService.deleteGroup(id);
