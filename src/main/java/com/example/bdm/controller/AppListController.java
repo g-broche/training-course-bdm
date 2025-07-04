@@ -12,6 +12,7 @@ import com.example.bdm.service.AppGroupService;
 import com.example.bdm.service.StudentService;
 import com.example.bdm.mapper.AppListMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -165,15 +166,15 @@ public class AppListController {
    }
    //Add group(s) to list {id}/addGroups
    @PostMapping("/{id}/addGroups")
-   public ResponseEntity<?> addGroupsToList(@PathVariable Long id, @RequestBody List<AppGroupDto> groupDtos) {
+   public ResponseEntity<?> addGroupsToList(HttpServletRequest request, @PathVariable Long id, @RequestBody List<AppGroupDto> groupDtos) {
       try {
          return service.findById(id)
                 .map(existingList -> {
-                   List<AppGroup> createdGroups = new ArrayList<>();
+                   List<AppGroupDto> createdGroups = new ArrayList<>();
 
                    for (AppGroupDto dto : groupDtos) {
-                      dto.setListId(existingList);
-                      ResponseEntity<AppGroup> response = groupService.createGroup(dto);
+                      dto.setListId(existingList.getId());
+                      ResponseEntity<AppGroupDto> response = groupService.createGroup(request,dto);
 
                       if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                          createdGroups.add(response.getBody());
