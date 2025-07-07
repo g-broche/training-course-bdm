@@ -8,8 +8,6 @@ user management, authentication, and organization.
 - [Overview](#overview)
 - [Technologies](#technologies)
 - [Features](#features)
-- [Development](#development)
-- [Testing](#testing)
 - [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
 - [Authentication](#authentication)
